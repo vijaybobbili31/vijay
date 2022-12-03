@@ -1,0 +1,157 @@
+****install jenkins*****
+
+sudo amazon-linux-extras install java-openjdk11
+
+yum install -y git
+
+---below three steps are to install maven----
+
+sudo wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+
+sudo sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+
+sudo yum install -y apache-maven
+
+****below 4 steps are to install jenkins****
+
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+sudo yum upgrade
+
+sudo yum install jenkins -y
+
+sudo systemctl enable jenkins
+
+sudo systemctl start jenkins
+
+git clone <myweb url>
+cd myweb
+mvn clean package
+ls
+
+service jenkins start
+
+---------------------------------------------------------------------------------
+open the jenkins dashboard in the url using ip address. copy the path mentioned in the jenkins dashboard and paste it in the jenkins putty terminal using cat <path>. copy the password and paste it in the jenkins dashboard and the jenkins will open.
+---------------------------------------------------------------------------------
+
+***installing sonarqube****
+
+yum install -y java-1.8.0-openjdk-devel.x86_64
+
+sudo wget -O /etc/yum.repos.d/sonar.repo http://downloads.sourceforge.net/project/sonar-pkg/rpm/sonar.repo
+
+sudo yum install sonar -y
+
+service sonar start
+
+-----copy ipaddress of sonarqube and paste in the url. put default username(admin) and password(admin) and add name and click generate token. save that token example tooken (3b716952bf3fbb21723a0e92f213e344d8ccc46b) and press skip tutorial----
+
+
+
+
+***open jenkins dashboard. manage plugins==> advanced==>upload sonar.hpi file==>deploy***
+
+***go to manage plugins==>configure system==> sonarqube servers(add name, sonarqube serverurl,sonarqube server authentication token.) ==>apply save
+
+***go to pom.xml file in git hub and add sonarqube private ip address in the properties section and commit changes.***
+
+new item==>name==>freestyle project==> scm==>git url==> build==>invokemaven(clean sonar:sonar package)==>apply==>save==>build now.
+
+****creat ec2 instance for nexus and install steps***
+
+sudo yum install -y java-1.8.0-openjdk-devel.x86_64
+
+cd /opt/
+
+sudo wget https://download.sonatype.com/nexus/3/latest-unix.tar.gzsudo wget https://download.sonatype.com/nexus/3/latest-unix.tar.gz
+
+ls
+
+tar -xvf latest-unix.tar.gz
+
+mv nexus-3.34.0-01 nexus3
+
+chown -R ec2-user:ec2-user nexus3 sonatype-work
+cd nexus3/
+ls
+cd bin/
+ls
+vi nexus.rc
+--press i. remove # symbol
+run_as_user="ec2-user"
+--esc :wq!
+
+ln -s /opt/nexus3/bin/nexus /etc/init.d/nexus
+cd /etc/init.d/
+chkconfig --add nexus
+chkconfig nexus on
+sudo service nexus start
+
+---copy ipaddress of nexus and paste in the url section with port 8081.enter username as admin. copy the path mentioned there and paste in the nexus instance using cat. copy the mentioned password and paste in the nexus dashboard.---
+
+***to change port number of nexus follow the below steps. open nexus instance type the following commands.***
+cd /opt/nexus3/etc/
+vi nexus-default.properties
+
+
+*****open jenkins***
+vi /etc/maven/settings.xml
+press i
+copy the line where there is username and password and paste it below those lines. Enter username(admin) and password(kiran)
+esc :wq!
+
+---go to jenkins dashboard==>new item==>scm(add github url)==>build(clean deploy)==> save==> build now.
+
+****create tomcat ec2 instance****
+intall tomcat steps
+
+yum install -y java-1.8.0-openjdk-devel.x86_64
+
+sudo wget <tomcat website. copy latest version of url>
+
+tar -xvf apache-tomcat-9.0.65.tar.gz
+ls
+cd apache-tomcat-9.0.65/
+chmod 777 webapps/
+cd bin/
+./startup.sh
+
+
+
+****open Jenkins dashboard****
+
+go to manage jenkins - advanced section - deploy plugin - choose file(sonar.hpi)- deploy
+
+go to manage jenkins - install - nexus artifact uploader - install
+
+
+go to manage jenkins - global tool configuration - Maven - name(Maven-3.6.1) - version(3.6.1)
+
+go to manage jenkins - configure system - sonarqube servers - Name(sonar)-serverurl(ipaddress:9000) - Server authentication token
+
+create new project - pipeline - generate script - git:GIT - 
+
+
+
+-----------below URL is of the jenkins-----------
+
+https://www.jenkins.io/doc/tutorials/tutorial-for-installing-jenkins-on-AWS/
+
+
+
+
+  <role rolename="manager-gui"/>
+  <role rolename="manager-script"/>
+  <user username="tomcat" password="tomcat" roles="manager-gui,manager-script"/>
+
+
+
+
+
+
+
+

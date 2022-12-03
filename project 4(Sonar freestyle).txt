@@ -1,0 +1,54 @@
+****install jenkins*****
+
+sudo amazon-linux-extras install java-openjdk11
+
+yum install -y git
+
+---below three steps are to install maven----
+
+sudo wget http://repos.fedorapeople.org/repos/dchen/apache-maven/epel-apache-maven.repo -O /etc/yum.repos.d/epel-apache-maven.repo
+
+sudo sed -i s/\$releasever/6/g /etc/yum.repos.d/epel-apache-maven.repo
+
+sudo yum install -y apache-maven
+
+****below 4 steps are to install jenkins****
+
+sudo wget -O /etc/yum.repos.d/jenkins.repo \
+    https://pkg.jenkins.io/redhat-stable/jenkins.repo
+
+sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+sudo yum upgrade -y
+
+sudo yum install jenkins -y
+
+sudo systemctl enable jenkins
+
+sudo systemctl start jenkins
+
+git clone <myweb url>
+cd myweb
+mvn clean package
+ls
+
+service jenkins start
+
+---------------------------------------------------------------------------------
+open the jenkins dashboard in the url using ip address. copy the path mentioned in the jenkins dashboard and paste it in the jenkins putty terminal using cat <path>. copy the password and paste it in the jenkins dashboard and the jenkins will open.
+---------------------------------------------------------------------------------
+
+***installing sonarqube****
+
+yum install -y java-1.8.0-openjdk-devel.x86_64
+
+sudo wget -O /etc/yum.repos.d/sonar.repo http://downloads.sourceforge.net/project/sonar-pkg/rpm/sonar.repo
+
+sudo yum install sonar -y
+
+service sonar start
+
+-----copy ipaddress of sonarqube and paste in the url. put default username(admin) and password(admin) and add name and click generate token. save that token example tooken (3b716952bf3fbb21723a0e92f213e344d8ccc46b) and press skip tutorial----
+
+install plugin of sonar.hpi. go to configure system and add sonar details and token. create new project(freestyle) and add git and go to build section - clean sonar:sonar package
+
